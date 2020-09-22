@@ -1,4 +1,4 @@
-name: Build and Deploy to Cloud Run
+name: Setup, Test, Build, Code Analysis, Containerize and Deploy
 
 on:
     push:
@@ -13,7 +13,7 @@ env:
 
 jobs:
     setup-build-deploy:
-        name: Setup, Build, and Deploy
+        name: Setup, Test, Build, Code Analysis, Containerize and Deploy
         runs-on: ubuntu-latest
         strategy:
           matrix:
@@ -31,7 +31,7 @@ jobs:
                   project_id: ${{ secrets.RUN_PROJECT }}
 
             # Build and unit test
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Unit Test and Build
               uses: actions/setup-node@v1
               with:
                 node-version: ${{ matrix.node-version }}
@@ -39,22 +39,21 @@ jobs:
             - run: npm install --production
 
             # SonarQube Analysis
-            - name: Analyze with SonarQube
+            - name: Code Analysis with Sonar Scan
               uses: kitabisa/sonarqube-action@master
               with:
                 host: ${{ secrets.SONARQUBE_HOST }}
                 login: ${{ secrets.SONARQUBE_TOKEN }}
 
-
-
             # Build and push image to Google Container Registry
-            - name: Build
+            - name: Docker build and publish to GCR
               run: |-
                 gcloud builds submit \
                   --quiet \
                   --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+            
             # Deploy image to Cloud Run
-            - name: Deploy
+            - name: Deploy to CloudRun
               run: |-
                 gcloud run deploy "$SERVICE_NAME" \
                   --quiet \
