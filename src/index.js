@@ -1,7 +1,7 @@
 const http = require('http');
 
 function requestHandler(req, res) {
-    res.write('This Application isNow running on Google Cloud RUN');
+    res.write('This Is Now Running On Google Cloud RUN');
     res.end();
 }
 
