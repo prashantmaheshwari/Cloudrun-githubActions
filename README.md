@@ -1,2 +1,1 @@
-# Cloudrun-githubActions
-Cloudrun-githubActions
+# github-action-cloud-run..
